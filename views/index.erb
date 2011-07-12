@@ -1,0 +1,220 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html> 
+<head> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+	<title>Dashboard</title> 
+
+
+	<!-- 1. Add these JavaScript inclusions in the head of your page --> 
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+	<script type="text/javascript" src="highcharts.js"></script>
+	<style type="text/css">
+	body{
+		background-color: black;
+		color: white;
+	}
+	#graph{
+		margin: 0 auto;
+		width: 95%;
+		height: 400px;
+	}
+	#projects {
+		margin: 0 auto;
+		width: 95%;
+		font-size: 2em;
+	}
+	#projects td{
+		text-align: center;
+	}
+	#list{
+		margin: 0 auto;
+		width: 100%;
+		height: 200px;
+		
+	}
+	#bart {
+		width: 400px;
+		height: 300px;
+		margin: 0 auto;
+		font-size: 1.5em;
+		background: URL('train_bg.png'), center, no-repeat;
+		-moz-border-radius: .5em;
+		-webkit-border-radius: .5em;
+		border-radius: .5em;
+	}
+	#bart td{
+		text-align: center;
+	}
+	</style>
+
+
+	<!-- 2. Add the JavaScript to initialize the chart on document ready --> 
+	<script type="text/javascript"> 
+	var chart; // global
+
+	/**
+	* Request data from the server, add it to the graph and set a timeout to request again
+	*/
+	var colors = ['#FCBF17', '#47C816', '#FF3B15', '#7453BE', '#137AFA'];
+	
+	var call_count = 0;
+
+	function requestData() {
+		$.ajax({
+			url: 'commit_data.json',
+			dataType: 'json',
+			//data: 'data',
+			success: function(commits) {
+				call_count++;
+				console.log("Count: " + call_count);
+				var data = [];
+				var cat =[];
+				var ct = 0;
+				if (commits != null ) {
+					$('#projects').html("");
+					console.log("clear html");
+				
+					$.each(commits, function(key, value){
+						console.log("Enter each");
+						var obj = {name: key, color: colors[ct], y: value.count};
+						//ct = ct == 4 ? 0 : ct+1;
+						if (ct == 4) { ct = 0; } else{ ct = ct + 1;};
+
+						console.log("Check counter for colors");
+						cat.push(key);
+						console.log("pushed key");
+						data.push(obj);
+						console.log("pushed data");
+						$('#projects').append("<tr><td>" + key + "</td><td>" + value.message + "</td><td>" + value.last + "</td></tr>");
+						console.log("Appended to projects");
+					});
+					var series = chart.series[0];
+
+					// add the point
+					chart.xAxis[0].setCategories(cat);
+					console.log("Updated categories and drew chart");
+					chart.series[0].setData(data);
+					console.log("Updated data and drew chart");
+				};
+				// call it again after ten second
+				setTimeout(requestData, 10000);	
+			},
+			cache: false
+		});
+	}
+	
+	function bartData(){
+		$.ajax({
+		        type: "GET",
+			url: "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=Mont&key=RHDD-EB5J-TJ2Q-YTGE",
+			dataType: "xml",
+			success: function(xml) {
+				//console.log("Success");
+				$('#bart').html("");
+				//console.log("Clear the table");
+				$(xml).find('etd').each(function(){
+					//console.log("each etd in the xml");
+					var name = $(this).find('abbreviation').text();
+					//console.log("Grab Name");
+					var estimates = [];
+					$(this).find('estimate').each(function(){
+						estimates.push($(this).find('minutes').text());
+						//console.log("Each estimate");
+					});
+					$('#bart').append("<tr><td>" + name + "</td><td>" + estimates + "</td></tr>");
+					//console.log("Appended");
+					setTimeout(bartData, 60000);	
+				});
+			},
+			cache: false
+		});
+	}
+
+	$(document).ready(function() {
+		bartData();
+		chart = new Highcharts.Chart({
+			chart: {
+				renderTo: 'graph',
+				defaultSeriesType: 'column',
+				events: {
+					load: requestData
+				},
+				backgroundColor: "#000",
+
+			},
+			legend: {
+				enabled: false
+			},
+			credits:{
+				enabled: false
+			},
+			title: {
+				text: null,
+				style: {
+					color: '#FFF'
+				}
+			},
+			xAxis: {
+				labels:{
+					enabled: true,
+					style:{
+						color: '#FFF'
+					}
+				},
+				tickLength: 0,
+				lineWidth: 0
+			},
+			yAxis: {
+				title: {
+					text: null
+				},
+				gridLineWidth: 0,
+				labels:{
+					enabled: false
+				}
+			},
+			plotOptions: {
+				series: {
+					borderColor: '#000',
+					dataLabels: {
+						enabled: true,
+						formatter: function() {
+							return this.y;
+						},
+						color: "#FFF",
+						style:{
+							fontSize: '2em'
+						}
+					}
+				}
+			},
+			series: [{
+				name: 'Commits',
+				type: 'column',
+				data: [],
+
+				}]
+			});		
+		});
+		</script> 
+
+	</head> 
+	<body style="background-color: black"> 
+
+		<!-- 3. Add the container --> 
+		<div id="graph"></div> 
+
+		<div id="list" >
+			<table id="projects">
+			</table>
+		</div> 
+		
+		<div id="trans"></div>
+			<table id="bart">
+			</table>
+
+
+		</div> 
+	</body> 
+	</html>
