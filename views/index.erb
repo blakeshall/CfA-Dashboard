@@ -10,9 +10,11 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
 	<script type="text/javascript" src="highcharts.js"></script>
 	<script type="text/javascript" src="smoothmarquee.js"></script>
+	<script type="text/javascript" src="jquery.simpleWeather.js"></script>
 	<style type="text/css">
 	body{
 		background-color: black;
+		width: 97%;
 		color: white;
 	}
 	#graph{
@@ -33,15 +35,45 @@
 		width: 100%;
 		height: 200px;
 		padding: .5em;
+
+	}
+	#weather{
+		width: 400px;
+		height: 300px;
+		float: left;
+		overflow: hidden; /* clearfix */
+		text-align: center;
+		background-color: #2A2A2A;
+		-moz-border-radius: .5em;
+		-webkit-border-radius: .5em;
+		border-radius: .5em;
+		color: white;
+	}
+	#weather img{
+		position: relative;
+		left: 40px;
 		
 	}
+	#current{
+		position: relative;
+		font-size: 2em;
+		top: -90px;
+	}
 	#trans {
-		padding: .25em;
+		width: 400px;
+		height: 300px;
+		margin: 0 auto;
+	}
+	#weather p{
+		position: relative;
+		top: -90px;
+		font-size: 1.5em;
 	}
 	#bart {
 		width: 400px;
 		height: 300px;
-		margin: 0 auto;
+		/* margin: 0 auto; */
+		float:left;
 		font-size: 1.5em;
 		background: URL('train_bg.png'), center, no-repeat;
 		-moz-border-radius: .5em;
@@ -53,57 +85,57 @@
 	}
 	/* The container for the module */
 	#twitter {
-	    background: #000;
+		background: #000;
 
-	    width: 100%; /* Up to you but remember to change the div width below as well if you change it */
-	    padding: .5em;
-			font-size: 1.5em;
-	    overflow: hidden; /* clearfix */
+		width: 100%; /* Up to you but remember to change the div width below as well if you change it */
+		padding: .5em;
+		font-size: 1.5em;
+		overflow: hidden; /* clearfix */
 
-	    -moz-border-radius: 5px;
-	    -webkit-border-radius: 5px;
-	    -o-border-radius: 5px;
-	    -ms-border-radius: 5px;
-	    border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-o-border-radius: 5px;
+		-ms-border-radius: 5px;
+		border-radius: 5px;
 	}
 
-	    #twitter h2 {
-	        float: left; /* We'll make the heading sit on its own line next to the tweets */
-	        width: 100px; /* Might wanna change this depending on the text in the heading */
-	        margin: 0;
-	        padding: 6px 0; /* I'll set the top and bottom padding here rather than in the container so as not to cut off any text */
+	#twitter h2 {
+		float: left; /* We'll make the heading sit on its own line next to the tweets */
+		width: 100px; /* Might wanna change this depending on the text in the heading */
+		margin: 0;
+		padding: 6px 0; /* I'll set the top and bottom padding here rather than in the container so as not to cut off any text */
 
-	        font-size: 1em;
-	        color: #fff;
-	       /* line-height: 1; */
-	    }
+		font-size: 1em;
+		color: #fff;
+		/* line-height: 1; */
+	}
 
-	    /* The marquee plug-in turns a marquee element into a div */
-	    #twitter p, 
-	    #twitter marquee, 
-	    #twitter div {
-	        float: left;
-	        width: 95%; /* Container width - heading width - 10px (for some right padding) */
-	        margin: 0;
-	        padding: 6px 0; /* Again we set the padding in here so as not to cut text */
-	        line-height: 1;
-	    }
+	/* The marquee plug-in turns a marquee element into a div */
+	#twitter p, 
+	#twitter marquee, 
+	#twitter div {
+		float: left;
+		width: 95%; /* Container width - heading width - 10px (for some right padding) */
+		margin: 0;
+		padding: 6px 0; /* Again we set the padding in here so as not to cut text */
+		line-height: 1;
+	}
 
-	        /* All the tweets will be links pointing to your page on twitter */
-	        #twitter marquee a, 
-	        #twitter div a {
-	            margin: 0 10px 0 0;
-	            color: #FFF;
-	            text-decoration: none;
-	        }
+	/* All the tweets will be links pointing to your page on twitter */
+	#twitter marquee a, 
+	#twitter div a {
+		margin: 0 10px 0 0;
+		color: #FFF;
+		text-decoration: none;
+	}
 
-	            /* The i is used to display the date of the tweet */
-	            #twitter marquee a i, 
-	            #twitter div a i {
-	                font-style: normal;
-	                color: #999;
-	            }
-	
+	/* The i is used to display the date of the tweet */
+	#twitter marquee a i, 
+	#twitter div a i {
+		font-style: normal;
+		color: #999;
+	}
+
 	</style>
 
 
@@ -115,9 +147,26 @@
 	* Request data from the server, add it to the graph and set a timeout to request again
 	*/
 	var colors = ['#FCBF17', '#47C816', '#FF3B15', '#7453BE', '#137AFA'];
-	
+
 	var call_count = 0;
 
+	function getWeather(){
+		$.simpleWeather({
+			location: 'san francisco, ca',
+			unit: 'f',
+			success: function(weather){
+				html = '<img src="'+weather.image+'">';
+				html += '<h2 id="current">'+weather.temp+'&deg; '+weather.units.temp+'</h2>';
+				html += '<p id="highlow">H '+weather.high+'&deg; '+weather.units.temp+'/ L '+weather.low+'&deg; '+weather.units.temp+'</p>';
+				
+				$("#weather").html(html);
+			},
+			error: function(error){
+				$("#weather").html("<p>"+error+"</p>");
+			}
+		});
+	}
+	
 	function requestData() {
 		$.ajax({
 			url: 'commit_data.json',
@@ -132,7 +181,7 @@
 				if (commits != null ) {
 					$('#projects').html("");
 					console.log("clear html");
-				
+
 					$.each(commits, function(key, value){
 						console.log("Enter each");
 						var obj = {name: key, color: colors[ct], y: value.count};
@@ -156,47 +205,124 @@
 					console.log("Updated data and drew chart");
 				};
 				// call it again after ten second
-				setTimeout(requestData, 10000);	
 			},
-			cache: false
+			cache: true
 		});
 	}
-	
+	// RHDD-EB5J-TJ2Q-YTGE
 	function bartData(){
 		$.ajax({
-		        type: "GET",
+			type: "GET",
 			url: "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=Mont&key=RHDD-EB5J-TJ2Q-YTGE",
 			dataType: "xml",
-			success: function(xml) {
-				//console.log("Success");
-				$('#bart').html("");
-				//console.log("Clear the table");
-				$(xml).find('etd').each(function(){
-					//console.log("each etd in the xml");
-					var name = $(this).find('abbreviation').text();
-					//console.log("Grab Name");
+			success: function(xml) {			
+				$('#bart').html("");			
+				$(xml).find('etd').each(function(){			
+					var name = $(this).find('abbreviation').text();			
 					var estimates = [];
 					$(this).find('estimate').each(function(){
-						estimates.push($(this).find('minutes').text());
-						//console.log("Each estimate");
+						estimates.push($(this).find('minutes').text());			
 					});
 					$('#bart').append("<tr><td>" + name + "</td><td>" + estimates + "</td></tr>");
-					//console.log("Appended");
-					setTimeout(bartData, 60000);	
 				});
 			},
 			cache: false
 		});
 	}
+	
+	function getTwitter(){
+		var Twitter = {
+			init: function () {
+				// Pass in the username you want to display feeds for
+				this.insertLatestTweets('codeforamerica');
+			}, 
+
+			// This replaces the <p>Loading...</p> with the tweets
+			insertLatestTweets: function (username) {
+				var limit    = 10;    // How many feeds do you want?
+				var url        = 'http://twitter.com/statuses/user_timeline.json?screen_name=' + username + '&count=' + limit + '&callback=?';
+
+				// Now ajax in the feeds from twitter.com
+				$.getJSON(url, function (data) {
+					// We'll start by creating a normal marquee-element for the tweets
+					var html = '<marquee behavior="scroll" scrollamount="1" direction="left">';
+
+					// Loop through all the tweets and create a link for each
+					for (var i in data) {
+						html += '<a href="http://twitter.com/' + username + '#status_' + data[i].id_str + '">' + data[i].text + ' <i>' + Twitter.daysAgo(data[i].created_at) + '</i></a>';
+					}
+
+					html += '</marquee>';
+
+					// Now replace the <p> with our <marquee>-element
+					$('#twitter p').replaceWith(html);
+
+					// The marquee element looks quite shite so we'll use Remy Sharp's plug-in to replace it with a smooth one
+					Twitter.fancyMarquee();
+				});
+			}, 
+
+			// Replaces the marquee-element with a fancy one
+			fancyMarquee: function () {
+				// Replace the marquee and do some fancy stuff (taken from remy sharp's website)
+				$('#twitter marquee').marquee('pointer')
+				.mouseover(function () {
+					$(this).trigger('stop');
+				})
+				.mouseout(function () {
+					$(this).trigger('start');
+				})
+				.mousemove(function (event) {
+					if ($(this).data('drag') == true) {
+						this.scrollLeft = $(this).data('scrollX') + ($(this).data('x') - event.clientX);
+					}
+				})
+				.mousedown(function (event) {
+					$(this).data('drag', true).data('x', event.clientX).data('scrollX', this.scrollLeft);
+				})
+				.mouseup(function () {
+					$(this).data('drag', false);
+				});
+			}, 
+
+			// Takes a date and return the number of days it's been since said date
+			daysAgo: function (date) {
+				// TODO: Fix date for IE...
+
+				var d = new Date(date).getTime();
+				var n = new Date().getTime();
+
+				var numDays = Math.round(Math.abs(n - d) / (1000 * 60 * 60 * 24));
+				var daysAgo = numDays + ' days ago';
+
+				if (numDays == 0) {
+					daysAgo = 'today';
+				}
+				else if (numDays == 1) {
+					daysAgo = numDays + ' day ago';
+				}
+
+				return daysAgo;
+			}
+		};
+
+		Twitter.init();
+	};
 
 	$(document).ready(function() {
+		getTwitter();
+		var twitterInterval = setInterval(getTwitter, 60000);
+		getWeather();
+		var weatherInterval = setInterval(getWeather, 60000);
 		bartData();
+		var bartInterval = setInterval(bartData, 30000);
+		
 		chart = new Highcharts.Chart({
 			chart: {
 				renderTo: 'graph',
 				defaultSeriesType: 'column',
 				events: {
-					load: requestData
+					//load: requestData
 				},
 				backgroundColor: "#000",
 
@@ -254,87 +380,15 @@
 
 				}]
 			});		
-		});
 		
-		var Twitter = {
-		    init: function () {
-		        // Pass in the username you want to display feeds for
-		        this.insertLatestTweets('codeforamerica');
-		    }, 
+		requestData();
+		var projectInterval = setInterval(requestData, 30000);
+		});
 
-		    // This replaces the <p>Loading...</p> with the tweets
-		    insertLatestTweets: function (username) {
-		        var limit    = 10;    // How many feeds do you want?
-		        var url        = 'http://twitter.com/statuses/user_timeline.json?screen_name=' + username + '&count=' + limit + '&callback=?';
-
-		        // Now ajax in the feeds from twitter.com
-		        $.getJSON(url, function (data) {
-		            // We'll start by creating a normal marquee-element for the tweets
-		            var html = '<marquee behavior="scroll" scrollamount="1" direction="left">';
-
-		            // Loop through all the tweets and create a link for each
-		            for (var i in data) {
-		                html += '<a href="http://twitter.com/' + username + '#status_' + data[i].id_str + '">' + data[i].text + ' <i>' + Twitter.daysAgo(data[i].created_at) + '</i></a>';
-		            }
-
-		            html += '</marquee>';
-
-		            // Now replace the <p> with our <marquee>-element
-		            $('#twitter p').replaceWith(html);
-
-		            // The marquee element looks quite shite so we'll use Remy Sharp's plug-in to replace it with a smooth one
-		            Twitter.fancyMarquee();
-		        });
-		    }, 
-
-		    // Replaces the marquee-element with a fancy one
-		    fancyMarquee: function () {
-		        // Replace the marquee and do some fancy stuff (taken from remy sharp's website)
-		        $('#twitter marquee').marquee('pointer')
-		            .mouseover(function () {
-		                $(this).trigger('stop');
-		            })
-		            .mouseout(function () {
-		                $(this).trigger('start');
-		            })
-		            .mousemove(function (event) {
-		                if ($(this).data('drag') == true) {
-		                    this.scrollLeft = $(this).data('scrollX') + ($(this).data('x') - event.clientX);
-		                }
-		            })
-		            .mousedown(function (event) {
-		                $(this).data('drag', true).data('x', event.clientX).data('scrollX', this.scrollLeft);
-		            })
-		            .mouseup(function () {
-		                $(this).data('drag', false);
-		            });
-		    }, 
-
-		    // Takes a date and return the number of days it's been since said date
-		    daysAgo: function (date) {
-		        // TODO: Fix date for IE...
-
-		        var d = new Date(date).getTime();
-		        var n = new Date().getTime();
-
-		        var numDays = Math.round(Math.abs(n - d) / (1000 * 60 * 60 * 24));
-		        var daysAgo = numDays + ' days ago';
-
-		        if (numDays == 0) {
-		            daysAgo = 'today';
-		        }
-		        else if (numDays == 1) {
-		            daysAgo = numDays + ' day ago';
-		        }
-
-		        return daysAgo;
-		    }
-		};
-
-		Twitter.init();
+		
 		</script> 
 
-	</head> 
+</head> 
 	<body style="background-color: black"> 
 
 		<!-- 3. Add the container --> 
@@ -345,18 +399,20 @@
 			</table>
 		</div> 
 		
+		<div id="weather">
+		</div>
 		<div id="trans">
 			<table id="bart">
 			</table>
 		</div>
 		<div id="twitter">
 
-		    <p>Loading...</p>
+			<p>Loading...</p>
 
-		    <noscript>This feature requires JavaScript</noscript>
+			<noscript>This feature requires JavaScript</noscript>
 
 		</div>
 
-		</div> 
-	</body> 
-	</html>
+	</div> 
+</body> 
+</html>

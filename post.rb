@@ -14,19 +14,19 @@ require 'json'
   :ref        => "ref",
   :commits    => [{
     :id        => "commit.id",
-    :message   => "commit.message",
+    :message   => "I fixed something",
     :timestamp => "commit.committed_date.xmlschema",
     :url       => "commit_url",
     :added     => "array_of_added_paths",
     :removed   => "array_of_removed_paths",
     :modified  => "array_of_modified_paths",
     :author    => {
-      :name  => "commit.author.name",
+      :name  => "someone",
       :email => "commit.author.email"
     }
   }],
   :repository => {
-    :name        => "DASHTEST",
+    :name        => "project",
     :url         => "repo_url",
     :pledgie     => "repository.pledgie.id",
     :description => "repository.description",
