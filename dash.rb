@@ -5,20 +5,21 @@ require 'sinatra'
 require 'httparty'
 require 'json'
 
+# Setup DB class for calls to the CouchDB database
 class DB
   include HTTParty
   base_uri 'localhost:5984/projects'
   format :json
-  
+
   def new_doc(name, text)
     options = { :body => text, :headers => {'Content-Type' => 'application/json'} }
     self.class.put("/#{name}", options)
   end
-  
+
   def get_all()
     self.class.get('/_all_docs?include_docs=true')
   end
-  
+
   def get_doc(name)
     self.class.get("/#{name}")
   end
@@ -27,23 +28,23 @@ end
 database = DB.new
 projects = {}
 
+# When the server is started check pull in the projects from the database and throw into a hash
 database.get_all().parsed_response["rows"].each do |project|
   projects[project["id"]] = project["doc"]
 end
 
-
-
-
+# Serve the dashboard page
 get '/' do
   erb :index
-  
 end
 
+# Return the projects as json
 get '/commit_data.json' do
   content_type :json
   projects.to_json
 end
 
+# Handle GitHub post-hooks and add the information to the database and hash
 post '/commit' do
   push = JSON.parse(request.body.read)
   repo = push["repository"]
@@ -64,7 +65,7 @@ post '/commit' do
      database.new_doc(repo_name, projects[repo_name].to_json)
      projects[repo_name] = database.get_doc(repo_name)
    end
-   
+
    "Got your post"
 
 end
