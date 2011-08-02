@@ -1,14 +1,13 @@
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
-<html> 
-<head> 
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
-	<title>Dashboard</title> 
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Dashboard</title>
 
 
-	<!-- 1. Add these JavaScript inclusions in the head of your page --> 
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
-	<script type="text/javascript" src="highcharts.js"></script>
+	<!-- 1. Add these JavaScript inclusions in the head of your page -->
+  <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="highcharty.js"></script>
 	<script type="text/javascript" src="smoothmarquee.js"></script>
 	<script type="text/javascript" src="jquery.simpleWeather.js"></script>
 	<style type="text/css">
@@ -52,7 +51,7 @@
 	#weather img{
 		position: relative;
 		left: 40px;
-		
+
 	}
 	#current{
 		position: relative;
@@ -111,8 +110,8 @@
 	}
 
 	/* The marquee plug-in turns a marquee element into a div */
-	#twitter p, 
-	#twitter marquee, 
+	#twitter p,
+	#twitter marquee,
 	#twitter div {
 		float: left;
 		width: 95%; /* Container width - heading width - 10px (for some right padding) */
@@ -122,7 +121,7 @@
 	}
 
 	/* All the tweets will be links pointing to your page on twitter */
-	#twitter marquee a, 
+	#twitter marquee a,
 	#twitter div a {
 		margin: 0 10px 0 0;
 		color: #FFF;
@@ -130,7 +129,7 @@
 	}
 
 	/* The i is used to display the date of the tweet */
-	#twitter marquee a i, 
+	#twitter marquee a i,
 	#twitter div a i {
 		font-style: normal;
 		color: #999;
@@ -139,8 +138,8 @@
 	</style>
 
 
-	<!-- 2. Add the JavaScript to initialize the chart on document ready --> 
-	<script type="text/javascript"> 
+	<!-- 2. Add the JavaScript to initialize the chart on document ready -->
+	<script type="text/javascript">
 	var chart; // global
 
 	/**
@@ -158,7 +157,7 @@
 				html = '<img src="'+weather.image+'">';
 				html += '<h2 id="current">'+weather.temp+'&deg; '+weather.units.temp+'</h2>';
 				html += '<p id="highlow">H '+weather.high+'&deg; '+weather.units.temp+'/ L '+weather.low+'&deg; '+weather.units.temp+'</p>';
-				
+
 				$("#weather").html(html);
 			},
 			error: function(error){
@@ -166,7 +165,7 @@
 			}
 		});
 	}
-	
+
 	function requestData() {
 		$.ajax({
 			url: 'commit_data.json',
@@ -215,13 +214,13 @@
 			type: "GET",
 			url: "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=Mont&key=RHDD-EB5J-TJ2Q-YTGE",
 			dataType: "xml",
-			success: function(xml) {			
-				$('#bart').html("");			
-				$(xml).find('etd').each(function(){			
-					var name = $(this).find('abbreviation').text();			
+			success: function(xml) {
+				$('#bart').html("");
+				$(xml).find('etd').each(function(){
+					var name = $(this).find('abbreviation').text();
 					var estimates = [];
 					$(this).find('estimate').each(function(){
-						estimates.push($(this).find('minutes').text());			
+						estimates.push($(this).find('minutes').text());
 					});
 					$('#bart').append("<tr><td>" + name + "</td><td>" + estimates + "</td></tr>");
 				});
@@ -229,13 +228,13 @@
 			cache: false
 		});
 	}
-	
+
 	function getTwitter(){
 		var Twitter = {
 			init: function () {
 				// Pass in the username you want to display feeds for
 				this.insertLatestTweets('codeforamerica');
-			}, 
+			},
 
 			// This replaces the <p>Loading...</p> with the tweets
 			insertLatestTweets: function (username) {
@@ -260,7 +259,7 @@
 					// The marquee element looks quite shite so we'll use Remy Sharp's plug-in to replace it with a smooth one
 					Twitter.fancyMarquee();
 				});
-			}, 
+			},
 
 			// Replaces the marquee-element with a fancy one
 			fancyMarquee: function () {
@@ -283,7 +282,7 @@
 				.mouseup(function () {
 					$(this).data('drag', false);
 				});
-			}, 
+			},
 
 			// Takes a date and return the number of days it's been since said date
 			daysAgo: function (date) {
@@ -311,12 +310,12 @@
 
 	$(document).ready(function() {
 		getTwitter();
-		var twitterInterval = setInterval(getTwitter, 60000);
+		//var twitterInterval = setInterval(getTwitter, 60000);
 		getWeather();
 		var weatherInterval = setInterval(getWeather, 60000);
 		bartData();
 		var bartInterval = setInterval(bartData, 30000);
-		
+
 		chart = new Highcharts.Chart({
 			chart: {
 				renderTo: 'graph',
@@ -379,26 +378,26 @@
 				data: [],
 
 				}]
-			});		
-		
+			});
+
 		requestData();
 		var projectInterval = setInterval(requestData, 30000);
 		});
 
-		
-		</script> 
 
-</head> 
-	<body style="background-color: black"> 
+		</script>
 
-		<!-- 3. Add the container --> 
-		<div id="graph"></div> 
+</head>
+	<body style="background-color: black">
+
+		<!-- 3. Add the container -->
+		<div id="graph"></div>
 
 		<div id="list" >
 			<table id="projects">
 			</table>
-		</div> 
-		
+		</div>
+
 		<div id="weather">
 		</div>
 		<div id="trans">
@@ -413,6 +412,6 @@
 
 		</div>
 
-	</div> 
-</body> 
+	</div>
+</body>
 </html>
