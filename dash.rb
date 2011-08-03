@@ -59,6 +59,9 @@ get '/commit_data.json' do
       end
     end
     weekly[key]["count"] = weekly[key]["commits"].length
+    if weekly[key]["count"] == 0
+      weekly.delete(key)
+    end
   end
   content_type :json
   weekly.to_json

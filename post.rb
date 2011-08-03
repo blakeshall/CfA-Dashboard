@@ -15,7 +15,7 @@ require 'json'
   :commits    => [{
     :id        => "commit.id",
     :message   => "I fixed something",
-    :timestamp => "#{Time.now.xmlschema}",
+    :timestamp => "#{(Time.now - 800000).xmlschema}",
     :url       => "commit_url",
     :added     => "array_of_added_paths",
     :removed   => "array_of_removed_paths",
@@ -26,7 +26,7 @@ require 'json'
     }
   }],
   :repository => {
-    :name        => "project",
+    :name        => "youcantseeme",
     :url         => "repo_url",
     :pledgie     => "repository.pledgie.id",
     :description => "repository.description",
