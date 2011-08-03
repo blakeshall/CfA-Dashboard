@@ -1,5 +1,5 @@
 require 'net/http'
-
+require 'time'
 require 'rubygems'
 require 'json'
 
@@ -15,7 +15,7 @@ require 'json'
   :commits    => [{
     :id        => "commit.id",
     :message   => "I fixed something",
-    :timestamp => "commit.committed_date.xmlschema",
+    :timestamp => "#{Time.now.xmlschema}",
     :url       => "commit_url",
     :added     => "array_of_added_paths",
     :removed   => "array_of_removed_paths",
